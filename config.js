@@ -1,0 +1,1 @@
+export const workshopName = "ML Movilidad Avanzada";
