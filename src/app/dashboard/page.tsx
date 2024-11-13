@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Users, Truck, Wrench } from 'lucide-react';
 
 const Dashboard = () => {
@@ -16,6 +17,7 @@ const Dashboard = () => {
 };
 
 const EmployeeWidget = () => {
+  const router = useRouter();
   const [value, setValue] = useState<number>(0);
 
   useEffect(() => {
@@ -33,11 +35,13 @@ const EmployeeWidget = () => {
       value={value}
       icon={<Users className="w-6 h-6 text-blue-500" />}
       color="blue"
+      onClick={() => router.push('/dashboard/employe')}
     />
   );
 };
 
 const RepairedVehiclesWidget = () => {
+  const router = useRouter();
   const [value, setValue] = useState<number>(0);
 
   useEffect(() => {
@@ -55,11 +59,13 @@ const RepairedVehiclesWidget = () => {
       value={value}
       icon={<Wrench className="w-6 h-6 text-green-500" />}
       color="green"
+      onClick={() => router.push('/dashboard/vehicles')}
     />
   );
 };
 
 const DistributorWidget = () => {
+  const router = useRouter();
   const [value, setValue] = useState<number>(0);
 
   useEffect(() => {
@@ -77,6 +83,7 @@ const DistributorWidget = () => {
       value={value}
       icon={<Truck className="w-6 h-6 text-yellow-500" />}
       color="yellow"
+      onClick={() => router.push('/dashboard/distributors')}
     />
   );
 };
@@ -86,10 +93,19 @@ interface DashboardWidgetProps {
   value: string | number;
   icon: React.ReactNode;
   color: string;
+  onClick: () => void;
 }
 
-const DashboardWidget: React.FC<DashboardWidgetProps> = ({ title, value, icon, color }) => (
-  <div className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-${color}-500`}>
+const DashboardWidget: React.FC<DashboardWidgetProps> = ({ title, value, icon, color, onClick }) => (
+  <div 
+    onClick={onClick}
+    className={`
+      bg-white rounded-lg shadow-md p-4 border-l-4 border-${color}-500
+      transition-all duration-300 ease-in-out
+      hover:scale-105 hover:shadow-lg
+      cursor-pointer
+    `}
+  >
     <div className="flex items-center justify-between mb-2">
       <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
       {icon}
