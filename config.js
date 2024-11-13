@@ -1,1 +1,1 @@
-export const workshopName = "ML Movilidad Avanzada";
+export const workshopName = "Automechanic";

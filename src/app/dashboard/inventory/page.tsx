@@ -114,23 +114,23 @@ export default function InventoryPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Inventory</h1>
+        <h1 className="text-2xl font-bold">Inventario</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center"
         >
           <Plus size={20} className="mr-2" />
-          Add Item
+          Añadir Item
         </button>
       </div>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -186,12 +186,12 @@ export default function InventoryPage() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-              {currentItem ? 'Edit Item' : 'Add New Item'}
+              {currentItem ? 'Editar item' : 'Añadir nuevo item'}
             </h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                  Name
+                  Nombre
                 </label>
                 <input
                   type="text"
@@ -204,7 +204,7 @@ export default function InventoryPage() {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
-                  Category
+                  Categoria
                 </label>
                 <input
                   type="text"
@@ -217,7 +217,7 @@ export default function InventoryPage() {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
-                  Quantity
+                  Cantidad
                 </label>
                 <input
                   type="number"
@@ -230,7 +230,7 @@ export default function InventoryPage() {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="unit">
-                  Unit
+                  Unidades
                 </label>
                 <input
                   type="text"
@@ -243,7 +243,7 @@ export default function InventoryPage() {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="minQuantity">
-                  Minimum Quantity
+                  Cantidad minima
                 </label>
                 <input
                   type="number"
@@ -259,7 +259,7 @@ export default function InventoryPage() {
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
-                  Save
+                  Guardar
                 </button>
                 <button
                   type="button"
@@ -270,7 +270,7 @@ export default function InventoryPage() {
                   }}
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
-                  Cancel
+                  Cancelar
                 </button>
               </div>
             </form>
