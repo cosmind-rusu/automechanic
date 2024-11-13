@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Home, Car, Wrench, Truck, Users, Menu, X, LogOut } from 'lucide-react';
+import { Home, Car, Boxes, Truck, Users, Menu, X, LogOut, NotebookPen } from 'lucide-react';
 import { workshopName } from "../../config";  // Importa la variable de configuración
 
 const Sidebar = () => {
@@ -15,9 +15,11 @@ const Sidebar = () => {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
     { href: '/dashboard/vehicles', icon: Car, label: 'Vehículos' },
-    { href: '/dashboard/inventory', icon: Wrench, label: 'Inventario' },
+    { href: '/dashboard/inventory', icon: Boxes, label: 'Inventario' },
     { href: '/dashboard/distributors', icon: Truck, label: 'Distribuidores' },
-    { href: '/dashboard/employe', icon: Users, label: 'Empleados' },
+    // Mostrar "Empleados" solo si el rol del usuario es "JEFE_MECANICO"
+    ...(session?.user?.role === 'JEFE_MECANICO' ? [{ href: '/dashboard/employe', icon: Users, label: 'Empleados' }] : []),
+    ...(session?.user?.role === 'JEFE_MECANICO' ? [{ href: '/dashboard/administracion', icon: NotebookPen, label: 'Administración' }] : []),
   ];
 
   useEffect(() => {
