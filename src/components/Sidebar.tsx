@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
-    { href: '/dashboard/vehicles', icon: Car, label: 'Vehiculos' },
+    { href: '/dashboard/vehicles', icon: Car, label: 'Vehículos' },
     { href: '/dashboard/inventory', icon: Wrench, label: 'Inventario' },
     { href: '/dashboard/distributors', icon: Truck, label: 'Distribuidores' },
     { href: '/dashboard/employe', icon: Users, label: 'Empleados' },

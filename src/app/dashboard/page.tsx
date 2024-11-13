@@ -55,10 +55,10 @@ const RepairedVehiclesWidget = () => {
 
   return (
     <DashboardWidget
-      title="Vehículos Reparados"
+      title="Vehículos en reparación"
       value={value}
-      icon={<Wrench className="w-6 h-6 text-green-500" />}
-      color="green"
+      icon={<Wrench className="w-6 h-6 text-orange-500" />}
+      color="orange"
       onClick={() => router.push('/dashboard/vehicles')}
     />
   );
@@ -81,8 +81,8 @@ const DistributorWidget = () => {
     <DashboardWidget
       title="Proveedores"
       value={value}
-      icon={<Truck className="w-6 h-6 text-yellow-500" />}
-      color="yellow"
+      icon={<Truck className="w-6 h-6 text-purple-500" />}
+      color="purple"
       onClick={() => router.push('/dashboard/distributors')}
     />
   );
