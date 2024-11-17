@@ -1,32 +1,29 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import crypto from 'crypto';
-import { sendPasswordResetEmail } from '../../lib/email'; // Necesitarás crear esta función
+// api/forgot-password/route.ts
 
-const prisma = new PrismaClient();
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '../../lib/prisma';
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { email } = await request.json();
-    const user = await prisma.user.findUnique({ where: { email } });
+    const { usuario } = await req.json();
 
-    if (!user) {
-      return NextResponse.json({ error: 'No se encontró ningún usuario con este correo electrónico.' }, { status: 404 });
+    if (!usuario) {
+      return NextResponse.json({ error: 'Nombre de usuario es requerido' }, { status: 400 });
     }
 
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // Token válido por 1 hora
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { resetToken, resetTokenExpiry },
+    // Verifica si el usuario existe en la base de datos usando el campo `usuario`
+    const user = await prisma.user.findUnique({
+      where: { usuario },
     });
 
-    await sendPasswordResetEmail(user.email, resetToken);
+    if (!user) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
 
-    return NextResponse.json({ message: 'Se ha enviado un correo con instrucciones para restablecer tu contraseña.' });
+    // Si el usuario existe, devuelve un mensaje de éxito
+    return NextResponse.json({ message: 'Usuario verificado. Procede con el cambio de contraseña.' }, { status: 200 });
   } catch (error) {
-    console.error('Error in forgot password:', error);
-    return NextResponse.json({ error: 'Ocurrió un error al procesar tu solicitud.' }, { status: 500 });
+    console.error("Error al verificar el usuario:", error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
