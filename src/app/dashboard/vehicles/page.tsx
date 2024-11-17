@@ -193,10 +193,7 @@ export default function VehiclesPage() {
                     <Edit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(vehicle.id)}
-                    className="text-red-600 hover:text-red-900 mr-2"
-                  >
-                    <Trash2 size={18} />
+                    onClick={() => handleDelete(vehicle.id)} className="text-red-600 hover:text-red-900 mr-2"><Trash2 size={18} />
                   </button>
                   <button>
                   <Link href={`/dashboard/vehicles/${vehicle.id}`} className="text-blue-600 hover:text-blue-900">

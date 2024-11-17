@@ -6,20 +6,34 @@ import { useSession, signOut } from 'next-auth/react';
 import { Home, Car, Boxes, Truck, Users, Menu, X, LogOut, NotebookPen } from 'lucide-react';
 import { workshopName } from "../../config";  // Importa la variable de configuración
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  const navItems = [
+// Definimos la configuración de navegación por roles
+const roleBasedNavItems = {
+  default: [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
     { href: '/dashboard/vehicles', icon: Car, label: 'Vehículos' },
     { href: '/dashboard/inventory', icon: Boxes, label: 'Inventario' },
     { href: '/dashboard/distributors', icon: Truck, label: 'Distribuidores' },
-    // Mostrar "Empleados" solo si el rol del usuario es "JEFE_MECANICO"
-    ...(session?.user?.role === 'JEFE_MECANICO' ? [{ href: '/dashboard/employe', icon: Users, label: 'Empleados' }] : []),
-    ...(session?.user?.role === 'JEFE_MECANICO' ? [{ href: '/dashboard/administracion', icon: NotebookPen, label: 'Administración' }] : []),
+  ],
+  JEFE_MECANICO: [
+    { href: '/dashboard/employe', icon: Users, label: 'Empleados' },
+    { href: '/dashboard/administration', icon: NotebookPen, label: 'Administración' }
+  ],
+  // Otros roles específicos si deseas añadir opciones personalizadas por rol
+};
+
+const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Verifica el rol del usuario
+  const userRole = session?.user?.role;
+
+  // Combina las opciones de navegación estándar con las específicas del rol
+  const navItems = [
+    ...roleBasedNavItems.default,
+    ...(userRole === 'JEFE_MECANICO' ? roleBasedNavItems.JEFE_MECANICO : []),
   ];
 
   useEffect(() => {
@@ -48,6 +62,10 @@ const Sidebar = () => {
       router.push('/'); // Redirige al usuario a la página de inicio
     }
   };
+
+  if (status === 'loading') {
+    return <div className="text-center p-4">Cargando...</div>; // Mostrar un mensaje de carga
+  }
 
   return (
     <>

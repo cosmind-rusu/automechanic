@@ -11,24 +11,35 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return; // Do nothing while loading
-    if (!session) {
-      // If not logged in, redirect to login page
-      router.push('/');
-    } else {
-      // Check if user has access to this page
-      const page = pathname.split('/')[2] || 'dashboard'; // Assuming dashboard routes are like /dashboard/page
+    // Añadimos logs para la depuración
+    console.log("RouteGuard - session status:", status);
+    console.log("RouteGuard - session data:", session);
+    console.log("RouteGuard - pathname:", pathname);
+
+    if (status === 'loading') return; // No hacer nada mientras se carga la sesión
+    
+    if (status === 'unauthenticated') {
+      console.log("User unauthenticated - redirecting to login");
+      router.replace('/'); // Redirigir al inicio de sesión si el usuario no está autenticado
+      return;
+    }
+
+    if (status === 'authenticated' && session) {
+      const page = pathname.split('/')[2] || 'dashboard'; // Obtener la página a la que se está intentando acceder
       const userRole = session.user?.role as UserRole;
-      
+
+      console.log("RouteGuard - userRole:", userRole);
+      console.log("RouteGuard - accessing page:", page);
+
       if (!hasAccess(userRole, page)) {
-        // Redirect to dashboard if user doesn't have access
-        router.push('/dashboard');
+        console.log("User does not have access to this page - redirecting to dashboard");
+        router.replace('/dashboard'); // Redirigir al dashboard si el usuario no tiene acceso a la pagina
       }
     }
-  }, [session, status, pathname, router]);
+  }, [status, session, pathname, router]);
 
   if (status === 'loading') {
-    return <div>Cargando...</div>;
+    return <div>Cargando...</div>; // Mostrar pantalla de carga mientras se carga la sesión
   }
 
   return <>{children}</>;
