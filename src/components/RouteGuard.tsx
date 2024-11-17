@@ -11,13 +11,17 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Añadimos logs para la depuración
     console.log("RouteGuard - session status:", status);
     console.log("RouteGuard - session data:", session);
     console.log("RouteGuard - pathname:", pathname);
 
+    // Permitir acceso a /dashboard/healtz sin autenticación ni verificación de rol
+    if (pathname === '/dashboard/healtz') {
+      return;
+    }
+
     if (status === 'loading') return; // No hacer nada mientras se carga la sesión
-    
+
     if (status === 'unauthenticated') {
       console.log("User unauthenticated - redirecting to login");
       router.replace('/'); // Redirigir al inicio de sesión si el usuario no está autenticado
@@ -25,15 +29,25 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     }
 
     if (status === 'authenticated' && session) {
-      const page = pathname.split('/')[2] || 'dashboard'; // Obtener la página a la que se está intentando acceder
-      const userRole = session.user?.role as UserRole;
+      const userRole = session.user.role as UserRole;
 
-      console.log("RouteGuard - userRole:", userRole);
-      console.log("RouteGuard - accessing page:", page);
+      // Restricción de acceso para /dashboard/administration
+      if (pathname === '/dashboard/administration') {
+        if (userRole !== 'JEFE_MECANICO') {
+          console.log("Access denied - user role is:", userRole);
+          router.replace('/dashboard'); // Redirigir al dashboard si no tiene el rol adecuado
+          return;
+        }
+      } else {
+        // Verificar acceso a otras páginas según el rol del usuario
+        const page = pathname.split('/')[2] || 'dashboard';
+        console.log("RouteGuard - userRole:", userRole);
+        console.log("RouteGuard - accessing page:", page);
 
-      if (!hasAccess(userRole, page)) {
-        console.log("User does not have access to this page - redirecting to dashboard");
-        router.replace('/dashboard'); // Redirigir al dashboard si el usuario no tiene acceso a la pagina
+        if (!hasAccess(userRole, page)) {
+          console.log("User does not have access to this page - redirecting to dashboard");
+          router.replace('/dashboard'); // Redirigir al dashboard si el usuario no tiene acceso a la página
+        }
       }
     }
   }, [status, session, pathname, router]);

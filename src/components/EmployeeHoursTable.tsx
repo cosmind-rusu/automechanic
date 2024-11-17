@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useSession, signIn } from 'next-auth/react';
-import { Clock } from 'lucide-react';
-import { format, startOfWeek, addWeeks, subWeeks, isSameWeek } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import { Clock } from "lucide-react";
+import { format, startOfWeek, addWeeks, subWeeks, isSameWeek } from "date-fns";
 
 interface ClockInRecord {
   id: string;
@@ -12,26 +11,21 @@ interface ClockInRecord {
 }
 
 const EmployeeHoursTable = () => {
-  const { data: session, status } = useSession();
   const [clockInRecords, setClockInRecords] = useState<ClockInRecord[]>([]);
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      signIn(); // Redirige al inicio de sesión si no está autenticado
-    }
-  }, [status]);
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchClockInRecords(currentWeekStart);
-    }
-  }, [currentWeekStart, status]);
+    fetchClockInRecords(currentWeekStart);
+  }, [currentWeekStart]);
 
   const fetchClockInRecords = async (weekStart: Date) => {
-    const response = await fetch(`/api/administration/clockin?weekStart=${weekStart.toISOString()}`);
-    const data = await response.json();
-    setClockInRecords(data);
+    try {
+      const response = await fetch(`/api/administration/clockin?weekStart=${weekStart.toISOString()}`);
+      const data = await response.json();
+      setClockInRecords(data);
+    } catch (error) {
+      console.error("Error fetching clock-in records:", error);
+    }
   };
 
   const handlePreviousWeek = () => {
@@ -46,16 +40,8 @@ const EmployeeHoursTable = () => {
   };
 
   const formatTime = (time: string | null) => {
-    return time ? format(new Date(time), 'HH:mm') : 'N/A';
+    return time ? format(new Date(time), "HH:mm") : "N/A";
   };
-
-  if (status === "loading") {
-    return <div className="text-center p-4">Cargando...</div>;
-  }
-
-  if (status === "authenticated" && session?.user?.role !== "JEFE_MECANICO") {
-    return <div className="text-center p-4">Acceso denegado</div>;
-  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
@@ -66,7 +52,7 @@ const EmployeeHoursTable = () => {
         <button onClick={handlePreviousWeek} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Semana Anterior
         </button>
-        <span className="font-semibold">{`Semana de ${format(currentWeekStart, 'dd/MM/yyyy')}`}</span>
+        <span className="font-semibold">{`Semana de ${format(currentWeekStart, "dd/MM/yyyy")}`}</span>
         <button onClick={handleNextWeek} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Siguiente Semana
         </button>
@@ -87,12 +73,12 @@ const EmployeeHoursTable = () => {
             const clockOutTime = record.clockOut ? new Date(record.clockOut) : null;
             const hoursWorked = clockOutTime
               ? ((clockOutTime.getTime() - clockInTime.getTime()) / (1000 * 60 * 60)).toFixed(2)
-              : 'N/A';
+              : "N/A";
 
             return (
               <tr key={record.id}>
                 <td className="px-4 py-2 border">{record.usuario}</td>
-                <td className="px-4 py-2 border">{format(clockInTime, 'dd/MM/yyyy')}</td>
+                <td className="px-4 py-2 border">{format(clockInTime, "dd/MM/yyyy")}</td>
                 <td className="px-4 py-2 border">{formatTime(record.clockIn)}</td>
                 <td className="px-4 py-2 border">{formatTime(record.clockOut)}</td>
                 <td className="px-4 py-2 border">{hoursWorked}</td>

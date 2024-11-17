@@ -8,7 +8,7 @@ import Header from '@/components/Header';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Taller Mecánico',
+  title: 'AutoMechanic',
   description: 'Sistema de gestión para taller mecánico',
 };
 
