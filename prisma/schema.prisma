@@ -82,7 +82,7 @@ model Distributor {
   nombre    String
   telefono  String
   direccion String
-  imagen    String?
+  imagen    String?  // Almacena la imagen en formato base64
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

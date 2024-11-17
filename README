@@ -1,3 +1,8 @@
 ClockIn
 
 Funciona mediante localStorage para guardar el tiempo por usuario y de cada sesion, asi si se cierra sesion o se sale de la pagina el clockin sigue contando las horas
+
+
+SCRIPT SEED
+
+Ejecuta el script seed.js para crear un usuario con el que poder loguearse

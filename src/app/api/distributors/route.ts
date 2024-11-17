@@ -33,7 +33,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const newDistributor = await prisma.distributor.create({ data });
+    const { nombre, telefono, direccion, imagen } = data;
+
+    if (imagen && Buffer.byteLength(imagen, 'base64') > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'La imagen no debe superar los 5 MB' }, { status: 400 });
+    }
+
+    const newDistributor = await prisma.distributor.create({
+      data: { nombre, telefono, direccion, imagen },
+    });
     return NextResponse.json(newDistributor);
   } catch (error) {
     console.error('Error creating distributor:', error);

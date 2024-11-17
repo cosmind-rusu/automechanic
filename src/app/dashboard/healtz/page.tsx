@@ -26,8 +26,10 @@ export default function HealthCheckPage() {
     { endpoint: "/api/distributors", label: "API de Distribuidores" },
     { endpoint: "/api/employees", label: "API de Empleados" },
     { endpoint: "/api/inventory", label: "API de Inventario" },
-    { endpoint: "/api/vehicles", label: "API de Vehiculos" },
+    { endpoint: "/api/vehicles", label: "API de Vehiculos" }, 
     { endpoint: "/api/administration", label: "API de Administracion" },
+    { endpoint: "/api/forgot-password", label: "API de Olvide mi contraseña" },
+    { endpoint: "/api/reset-password", label: "API de Resetear la contraseña" },
   ];
 
   useEffect(() => {

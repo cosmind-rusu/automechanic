@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-
 type Distributor = {
   id?: string;
   nombre: string;
@@ -23,6 +22,7 @@ export default function DistributorForm({ distributor, onSave, onCancel }: Distr
     direccion: '',
     imagen: null,
   });
+  const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
     if (distributor) {
@@ -33,6 +33,22 @@ export default function DistributorForm({ distributor, onSave, onCancel }: Distr
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5 MB limit
+        setImageError('La imagen no debe superar los 5 MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm(prev => ({ ...prev, imagen: reader.result as string }));
+        setImageError(null);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -93,16 +109,17 @@ export default function DistributorForm({ distributor, onSave, onCancel }: Distr
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imagen">
-              URL de la imagen
+              Imagen
             </label>
             <input
-              type="text"
+              type="file"
               id="imagen"
               name="imagen"
-              value={form.imagen || ''}
-              onChange={handleChange}
+              accept="image/*"
+              onChange={handleImageChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
+            {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
           </div>
           <div className="flex items-center justify-between">
             <button
