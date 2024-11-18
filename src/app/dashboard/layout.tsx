@@ -3,6 +3,7 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import Sidebar from '../../components/Sidebar';
 import { RouteGuard } from '../../components/RouteGuard';
+import ChatBot from '@/components/Chat';
 
 export default function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
           {children}
         </main>
+        <ChatBot />
       </div>
     </RouteGuard>
   );

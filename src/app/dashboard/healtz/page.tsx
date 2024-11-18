@@ -30,6 +30,7 @@ export default function HealthCheckPage() {
     { endpoint: "/api/administration", label: "API de Administracion" },
     { endpoint: "/api/forgot-password", label: "API de Olvide mi contraseña" },
     { endpoint: "/api/reset-password", label: "API de Resetear la contraseña" },
+    { endpoint: "/api/chat", label: "API de Mini Mech" },
   ];
 
   useEffect(() => {
