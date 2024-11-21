@@ -25,14 +25,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const data = await request.json();
     const { nombre, telefono, direccion, imagen } = data;
 
-    if (imagen && Buffer.byteLength(imagen, 'base64') > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'La imagen no debe superar los 5 MB' }, { status: 400 });
-    }
-
     const updatedDistributor = await prisma.distributor.update({
       where: { id: params.id },
       data: { nombre, telefono, direccion, imagen },
     });
+
     return NextResponse.json(updatedDistributor);
   } catch (error) {
     console.error('Error updating distributor:', error);

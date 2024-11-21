@@ -7,8 +7,9 @@ import RepairedVehiclesWidget from '@/components/RepairedVehiclesWidget';
 import DistributorWidget from '@/components/DistributorWidget';
 import ClockInWidget from '@/components/ClockInWidget';
 import TaskList from '@/components/TaskList';
+import EmployeeVehiclesWidget from '@/components/EmployeeVehiclesWidget';
 /* import ChatBot from '@/components/Chat'; */
-import Tutorial from '@/components/Tutorial';
+
 
 const Dashboard = () => {
   return (
@@ -18,6 +19,7 @@ const Dashboard = () => {
         <EmployeeWidget />
         <RepairedVehiclesWidget />
         <DistributorWidget />
+        <EmployeeVehiclesWidget />
       </div>
       <div className="mt-8">
         <ClockInWidget />

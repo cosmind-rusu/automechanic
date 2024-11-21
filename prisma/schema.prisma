@@ -49,15 +49,28 @@ enum Role {
 }
 
 model InventoryItem {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
   category    String
   quantity    Int
-  unit        String
   minQuantity Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  alerts      InventoryAlert[] // Relación con las alertas
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
+
+model InventoryAlert {
+  id          String       @id @default(cuid())
+  itemId      String       // Relación con el inventario
+  item        InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  message     String
+  currentQty  Int           // Cantidad actual del inventario
+  minQty      Int           // Cantidad mínima del inventario
+  resolvedAt  DateTime?     // Fecha de resolución de la alerta
+  createdAt   DateTime      @default(now())
+}
+
+
 
 model Vehicle {
   id            String   @id @default(cuid())
@@ -82,10 +95,11 @@ model Distributor {
   nombre    String
   telefono  String
   direccion String
-  imagen    String?  // Almacena la imagen en formato base64
+  imagen    String?  // Almacena la imagen en formato Base64
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 model ClockIn {
   id         String   @id @default(cuid())

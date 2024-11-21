@@ -6,10 +6,16 @@ const prisma = new PrismaClient();
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
     const data = await request.json();
+
+    // Excluye las propiedades de relaciones que Prisma no puede procesar directamente
+    const { alerts, ...updateData } = data;
+
+    // Actualiza el item excluyendo relaciones como 'alerts'
     const updatedItem = await prisma.inventoryItem.update({
       where: { id: params.id },
-      data,
+      data: updateData,
     });
+
     return NextResponse.json(updatedItem);
   } catch (error) {
     console.error('Error updating inventory item:', error);
