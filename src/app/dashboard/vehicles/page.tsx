@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
+import MechanicSelector from '@/components/MechanicSelector';
 
 type Vehicle = {
   id: string;
@@ -326,9 +327,7 @@ export default function VehiclesPage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Empleados asignados</label>
-          {/* Aquí deberías incluir un componente de selección múltiple para los empleados */}
-          {/* Por ejemplo, podrías usar react-select o un componente personalizado */}
+          <MechanicSelector selectedMechanics={formData.empleados} onChange={(ids) => setFormData({ ...formData, empleados: ids })}/>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">Comentarios</label>
