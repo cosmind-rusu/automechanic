@@ -9,7 +9,7 @@
   "start": "next start",
   "seed": "ts-node -P tsconfig.seed.json scripts/seed.ts",
   "lint": "next lint",
-  "prepare:db": "npx prisma generate && npx prisma migrate dev",
+  "prepare:db": "npx prisma generate && npx prisma migrate dev && npm run seed",
   "build:all": "echo $DATABASE_URL && npm run prepare:db && npm run build"
 },
   "dependencies": {
