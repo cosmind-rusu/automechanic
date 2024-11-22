@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth/next';
 
 const prisma = new PrismaClient();
 
-export const dynamic = 'force-dynamic'; // Marcar como ruta dinámica
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
