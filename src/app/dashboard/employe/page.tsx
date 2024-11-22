@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import { User, Plus, Edit, Eye, Trash2, Check, X } from 'lucide-react'
 
+export const dynamic = 'force-dynamic';
+
 type Employee = {
   id: string
   name: string
