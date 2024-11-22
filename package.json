@@ -10,7 +10,7 @@
   "seed": "ts-node -P tsconfig.seed.json scripts/seed.ts",
   "lint": "next lint",
   "prepare:db": "prisma generate && prisma migrate deploy",
-  "build:all": "npm run prepare:db && npm run build"
+  "build:all": "echo $DATABASE_URL && npm run prepare:db && npm run build"
 },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.72",
