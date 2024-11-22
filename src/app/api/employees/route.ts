@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function GET() {
   try {
     // Obtener la lista de empleados con las columnas definidas en el esquema
-    const employees = await prisma.user.findMany({
+    const employees: Pick<User, 'id' | 'nombre' | 'apellido' | 'telefono' | 'rol'>[] = await prisma.user.findMany({
       select: {
         id: true,
         nombre: true,
