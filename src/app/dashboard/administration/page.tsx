@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, Clock, Bell } from 'lucide-react'
 import EmployeeHoursTable from "@/components/EmployeeHoursTable"
 import AdminAlertPanel from "@/components/AdminAlertPanel"
+import EmployeeWidget from "@/components/EmployeeWidget"
 
 export default function AdministrationPage() {
   const { data: session, status } = useSession()
@@ -68,6 +69,9 @@ export default function AdministrationPage() {
           </CardDescription>
         </CardHeader>
       </Card>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-3">
+        <EmployeeWidget />
+      </div>
 
       <Tabs defaultValue="hours" className="space-y-4">
         <TabsList>

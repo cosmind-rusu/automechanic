@@ -66,7 +66,7 @@ export default function EmployeeWidget() {
   return (
     <Card 
       className="w-full overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105 cursor-pointer"
-      onClick={() => router.push('/dashboard/employees')}
+      onClick={() => router.push('/dashboard/employe')}
     >
       <CardContent className={`p-6 ${color}`}>
         <div className="flex justify-between items-start">

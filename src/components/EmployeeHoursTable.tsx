@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react"
 import { Clock, ChevronLeft, ChevronRight } from 'lucide-react'
-import { format, startOfWeek, addWeeks, subWeeks, isSameWeek, parseISO } from "date-fns"
-import { es } from "date-fns/locale"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -19,7 +17,12 @@ interface ClockInRecord {
 
 const EmployeeHoursTable = () => {
   const [clockInRecords, setClockInRecords] = useState<ClockInRecord[]>([])
-  const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }))
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+    const today = new Date()
+    const day = today.getDay()
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(today.setDate(diff))
+  })
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
@@ -49,26 +52,68 @@ const EmployeeHoursTable = () => {
   }
 
   const handlePreviousWeek = () => {
-    setCurrentWeekStart(subWeeks(currentWeekStart, 1))
+    const newDate = new Date(currentWeekStart)
+    newDate.setDate(currentWeekStart.getDate() - 7)
+    setCurrentWeekStart(newDate)
   }
 
   const handleNextWeek = () => {
-    const nextWeek = addWeeks(currentWeekStart, 1)
-    if (!isSameWeek(nextWeek, new Date(), { weekStartsOn: 1 })) {
-      setCurrentWeekStart(nextWeek)
+    const newDate = new Date(currentWeekStart)
+    newDate.setDate(currentWeekStart.getDate() + 7)
+    
+    const today = new Date()
+    const currentWeekStartDate = getWeekStart(today)
+    
+    if (newDate <= currentWeekStartDate) {
+      setCurrentWeekStart(newDate)
     }
   }
 
+  const getWeekStart = (date: Date) => {
+    const newDate = new Date(date)
+    const day = newDate.getDay()
+    const diff = newDate.getDate() - day + (day === 0 ? -6 : 1)
+    newDate.setDate(diff)
+    return newDate
+  }
+
   const formatTime = (time: string | null) => {
-    return time ? format(parseISO(time), "HH:mm") : "N/A"
+    if (!time) return "N/A"
+    const date = new Date(time)
+    return date.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', hour12: false })
   }
 
   const calculateHoursWorked = (clockIn: string, clockOut: string | null) => {
     if (!clockOut) return "N/A"
-    const start = parseISO(clockIn)
-    const end = parseISO(clockOut)
+    const start = new Date(clockIn)
+    const end = new Date(clockOut)
     const diffInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
     return diffInHours.toFixed(2)
+  }
+
+  const formatWeekDate = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: 'numeric',
+      month: 'long'
+    }
+    return `Semana del ${date.toLocaleDateString('es', options)}`
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('es', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+  }
+
+  const isCurrentWeek = (date: Date) => {
+    const today = new Date()
+    const currentWeekStart = getWeekStart(today)
+    const nextWeekStart = new Date(date)
+    nextWeekStart.setDate(date.getDate() + 7)
+    return nextWeekStart > currentWeekStart
   }
 
   return (
@@ -85,13 +130,13 @@ const EmployeeHoursTable = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="font-semibold">
-            {format(currentWeekStart, "'Semana del' d 'de' MMMM", { locale: es })}
+            {formatWeekDate(currentWeekStart)}
           </span>
           <Button
             onClick={handleNextWeek}
             variant="outline"
             size="icon"
-            disabled={isSameWeek(addWeeks(currentWeekStart, 1), new Date(), { weekStartsOn: 1 })}
+            disabled={!isCurrentWeek(currentWeekStart)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -122,7 +167,7 @@ const EmployeeHoursTable = () => {
                 clockInRecords.map((record) => (
                   <TableRow key={record.id}>
                     <TableCell>{record.usuario}</TableCell>
-                    <TableCell>{format(parseISO(record.clockIn), "dd/MM/yyyy")}</TableCell>
+                    <TableCell>{formatDate(record.clockIn)}</TableCell>
                     <TableCell>{formatTime(record.clockIn)}</TableCell>
                     <TableCell>{formatTime(record.clockOut)}</TableCell>
                     <TableCell>{calculateHoursWorked(record.clockIn, record.clockOut)}</TableCell>
@@ -144,4 +189,3 @@ const EmployeeHoursTable = () => {
 }
 
 export default EmployeeHoursTable
-

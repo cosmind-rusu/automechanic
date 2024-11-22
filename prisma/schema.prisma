@@ -70,8 +70,6 @@ model InventoryAlert {
   createdAt   DateTime      @default(now())
 }
 
-
-
 model Vehicle {
   id            String   @id @default(cuid())
   propietario   String
