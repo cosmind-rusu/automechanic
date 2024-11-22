@@ -2,14 +2,16 @@
   "name": "automechanic",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "turbo": "next dev --turbo",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "seed": "ts-node -P tsconfig.seed.json scripts/seed.ts",
-    "lint": "next lint"
-  },
+"scripts": {
+  "turbo": "next dev --turbo",
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "seed": "ts-node -P tsconfig.seed.json scripts/seed.ts",
+  "lint": "next lint",
+  "prepare:db": "prisma generate && prisma migrate deploy",
+  "build:all": "npm run prepare:db && npm run build"
+},
   "dependencies": {
     "@ai-sdk/openai": "^0.0.72",
     "@next-auth/prisma-adapter": "^1.0.7",
