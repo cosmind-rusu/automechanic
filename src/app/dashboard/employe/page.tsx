@@ -1,79 +1,61 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import EmployeeCard from '@/components/EmployeeCard';
-import RegistrationRequestCard from '@/components/RegistrationRequestCard';
+
+import React, { useState } from 'react';
+import UserList from '@/components/UserList';
+import EmployeeDetails from '@/components/EmployeeDetails';
+import RegistrationRequests from '@/components/RegistrationRequests';
+import EditEmployeeForm from '@/components/EditEmployeeForm';
 import { Plus } from 'lucide-react';
 
-type Employee = {
-  id: string;
-  name: string;
-  telefono: number;
-};
-
-type RegistrationRequest = {
-  id: string;
-  nombre: string;
-  apellido: string;
-  telefono: number;
-  usuario: string;
-  status: string;
-};
-
-export const dynamic = 'force-dynamic';
-
 const EmployeesPage = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [registrationRequests, setRegistrationRequests] = useState<RegistrationRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false); // Nuevo estado para el modal de edición
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'employees' | 'requests'>('employees');
 
-  useEffect(() => {
-    fetchEmployees();
-    fetchRegistrationRequests();
-  }, []);
-
-  const fetchEmployees = async () => {
-    try {
-      const response = await fetch('/api/employees');
-      const data = await response.json();
-      setEmployees(data);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  // Función para abrir el modal de detalles
+  const handleView = (id: string) => {
+    setSelectedUserId(id);
+    setIsDetailOpen(true);
   };
 
-  const fetchRegistrationRequests = async () => {
-    try {
-      const response = await fetch('/api/admin/registration-requests');
-      const data = await response.json();
-      setRegistrationRequests(data);
-    } catch (error) {
-      console.error('Error fetching registration requests:', error);
-    }
+  // Función para abrir el modal de edición
+  const handleEdit = (id: string) => {
+    setSelectedUserId(id);
+    setIsEditOpen(true);
   };
 
-  const handleApprove = async (id: string) => {
-    try {
-      await fetch(`/api/admin/registration-requests/${id}/approve`, { method: 'POST' });
-      fetchRegistrationRequests();
-      fetchEmployees();
-    } catch (error) {
-      console.error('Error approving registration request:', error);
-    }
+  // Función para abrir el modal de confirmación de eliminación
+  const handleDeletePrompt = (id: string) => {
+    setUserToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleReject = async (id: string) => {
+  // Función para borrar el empleado
+  const handleDelete = async () => {
+    if (!userToDelete) return;
+
     try {
-      await fetch(`/api/admin/registration-requests/${id}/reject`, { method: 'POST' });
-      fetchRegistrationRequests();
+      const response = await fetch(`/api/employees/${userToDelete}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el empleado');
+      }
+
+      alert('Empleado eliminado correctamente');
+      setIsDeleteModalOpen(false);
+
+      // Actualiza la lista de empleados
+      window.location.reload(); // O usa un estado local para refrescar sin recargar la página
     } catch (error) {
-      console.error('Error rejecting registration request:', error);
+      console.error('Error al eliminar el empleado:', error);
+      alert('Error al eliminar el empleado');
     }
   };
-
-  if (isLoading) return <p>Cargando...</p>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -85,42 +67,79 @@ const EmployeesPage = () => {
             Añadir Empleado
           </button>
         </div>
+
+        {/* Tabs */}
         <div className="bg-gray-100 px-6 py-2">
           <button
-            className={`mr-4 px-4 py-2 rounded-t-lg ${activeTab === 'employees' ? 'bg-white text-orange-500' : 'bg-gray-200 text-gray-700'}`}
+            className={`mr-4 px-4 py-2 rounded-t-lg ${
+              activeTab === 'employees' ? 'bg-white text-orange-500' : 'bg-gray-200 text-gray-700'
+            }`}
             onClick={() => setActiveTab('employees')}
           >
             Empleados
           </button>
           <button
-            className={`px-4 py-2 rounded-t-lg ${activeTab === 'requests' ? 'bg-white text-orange-500' : 'bg-gray-200 text-gray-700'}`}
+            className={`px-4 py-2 rounded-t-lg ${
+              activeTab === 'requests' ? 'bg-white text-orange-500' : 'bg-gray-200 text-gray-700'
+            }`}
             onClick={() => setActiveTab('requests')}
           >
             Solicitudes de Registro
           </button>
         </div>
+
+        {/* Contenido */}
         <div className="p-6">
-          {activeTab === 'employees' &&
-            employees.map((employee) => (
-              <EmployeeCard
-                key={employee.id}
-                employee={employee}
-                onEdit={() => {}}
-                onView={() => {}}
-                onDelete={() => {}}
-              />
-            ))}
-          {activeTab === 'requests' &&
-            registrationRequests.map((request) => (
-              <RegistrationRequestCard
-                key={request.id}
-                request={request}
-                onApprove={handleApprove}
-                onReject={handleReject}
-              />
-            ))}
+          {activeTab === 'employees' && (
+            <UserList
+              onView={handleView}
+              onEdit={handleEdit} // Nueva función para edición
+              onDelete={handleDeletePrompt}
+            />
+          )}
+          {activeTab === 'requests' && <RegistrationRequests />}
         </div>
       </div>
+
+      {/* Modal para Detalles del Usuario */}
+      {isDetailOpen && selectedUserId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <EmployeeDetails employeeId={selectedUserId} onClose={() => setIsDetailOpen(false)} />
+        </div>
+      )}
+
+      {/* Modal para Editar el Usuario */}
+      {isEditOpen && selectedUserId && (
+        <EditEmployeeForm
+          employeeId={selectedUserId}
+          onClose={() => setIsEditOpen(false)}
+          onUpdate={() => window.location.reload()} // Actualiza la lista tras la edición
+        />
+      )}
+
+      {/* Modal para Confirmación de Eliminación */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Confirmar Eliminación</h2>
+            <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
