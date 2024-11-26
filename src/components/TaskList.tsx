@@ -1,97 +1,106 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { CheckCircle, Edit, Trash, PlusCircle } from 'lucide-react';
+
+import React, { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { CheckCircle, Edit, Trash, PlusCircle } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
+  id: string
+  title: string
+  completed: boolean
 }
 
-const TaskList = () => {
-  const { data: session } = useSession();
-  const [tasks, setTasks] = useState<Task[]>([]); // Especificar el tipo como Task[]
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const usuario = session?.user?.name; // Usar el nombre de usuario
+export default function TaskList() {
+  const { data: session } = useSession()
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+  const usuario = session?.user?.name
 
   useEffect(() => {
-    if (usuario) fetchTasks();
-  }, [usuario]);
+    if (usuario) fetchTasks()
+  }, [usuario])
 
   const fetchTasks = async () => {
-    const response = await fetch(`/api/task/read?usuario=${usuario}`);
-    const data: Task[] = await response.json(); // Especificar que data es de tipo Task[]
-    setTasks(data);
-  };
+    const response = await fetch(`/api/task/read?usuario=${usuario}`)
+    const data: Task[] = await response.json()
+    setTasks(data)
+  }
 
   const handleAddTask = async () => {
-    if (!newTaskTitle.trim()) return;
+    if (!newTaskTitle.trim()) return
 
     const response = await fetch('/api/task/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, title: newTaskTitle }), // Enviar usuario
-    });
-    const task: Task = await response.json(); // Especificar que task es de tipo Task
-    setTasks([...tasks, task]);
-    setNewTaskTitle('');
-  };
+      body: JSON.stringify({ usuario, title: newTaskTitle }),
+    })
+    const task: Task = await response.json()
+    setTasks([...tasks, task])
+    setNewTaskTitle('')
+  }
 
   const handleUpdateTask = async (taskId: string, title: string, completed: boolean) => {
     await fetch('/api/task/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ taskId, title, completed }),
-    });
-    fetchTasks();
-  };
+    })
+    fetchTasks()
+  }
 
   const handleDeleteTask = async (taskId: string) => {
     await fetch('/api/task/delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ taskId }),
-    });
-    setTasks(tasks.filter(task => task.id !== taskId));
-  };
+    })
+    setTasks(tasks.filter(task => task.id !== taskId))
+  }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg mt-8">
-      <h2 className="text-2xl font-bold mb-4">Mis Tareas</h2>
-      <div className="flex mb-4">
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="Añadir nueva tarea"
-          className="border p-2 flex-grow rounded-l-md"
-        />
-        <button onClick={handleAddTask} className="bg-green-500 text-white p-2 rounded-r-md hover:bg-green-600">
-          <PlusCircle size={20} />
-        </button>
-      </div>
-      <ul className="space-y-2">
-        {tasks.map((task) => (
-          <li key={task.id} className="flex items-center justify-between p-2 border rounded">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={task.completed}
-                onChange={() => handleUpdateTask(task.id, task.title, !task.completed)}
-              />
-              <span className={task.completed ? 'line-through' : ''}>{task.title}</span>
-            </div>
-            <div className="flex space-x-2">
-              <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:text-red-700">
-                <Trash size={18} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+    <Card className="w-full max-w-2xl mx-auto mt-8">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-center">Mis Tareas</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex space-x-2 mb-6">
+          <Input
+            type="text"
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            placeholder="Añadir nueva tarea"
+            className="flex-grow"
+          />
+          <Button onClick={handleAddTask} className="bg-green-500 hover:bg-green-600">
+            <PlusCircle className="mr-2 h-4 w-4" /> Añadir
+          </Button>
+        </div>
+        <ul className="space-y-4">
+          {tasks.map((task) => (
+            <li key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm transition-all hover:shadow-md">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  checked={task.completed}
+                  onCheckedChange={(checked) => handleUpdateTask(task.id, task.title, checked as boolean)}
+                />
+                <span className={`text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                  {task.title}
+                </span>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:text-red-700 hover:bg-red-100">
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  )
+}
 
-export default TaskList;

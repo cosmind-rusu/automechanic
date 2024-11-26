@@ -29,10 +29,10 @@ export async function POST(request: Request) {
     const newVehicle = await prisma.vehicle.create({
       data: {
         ...data,
+        fechaEntrada: new Date(data.fechaEntrada),
+        fechaSalida: data.fechaSalida ? new Date(data.fechaSalida) : null,
         empleados: {
-          connect: data.empleados && data.empleados.length > 0
-            ? data.empleados.map((id: string) => ({ id }))
-            : undefined,
+          connect: data.empleados?.map((id: string) => ({ id })),
         },
       },
       include: {

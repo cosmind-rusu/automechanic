@@ -19,6 +19,8 @@ type Vehicle = {
   empleados: { id: string; nombre: string; apellido: string }[];
   comentarios?: string;
   estado: string;
+  fechaEntrada: Date;    
+  fechaSalida?: Date;    
 };
 
 export default function VehiclesPage() {
@@ -40,6 +42,8 @@ export default function VehiclesPage() {
     empleados: [] as string[],
     comentarios: '',
     estado: 'En reparación',
+    fechaEntrada: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+    fechaSalida: '',  // Inicialmente vacío
   });
 
   useEffect(() => {
@@ -99,9 +103,11 @@ export default function VehiclesPage() {
         combustible: '',
         kilometraje: 0,
         bastidor: '',
-        empleados: [],
+        empleados: [] as string[],
         comentarios: '',
         estado: 'En reparación',
+        fechaEntrada: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+        fechaSalida: '',  // Inicialmente vacío
       });
     } catch (err) {
       if (err instanceof Error) {
@@ -127,6 +133,8 @@ export default function VehiclesPage() {
       empleados: vehicle.empleados.map(emp => emp.id),
       comentarios: vehicle.comentarios || '',
       estado: vehicle.estado,
+      fechaEntrada: new Date(vehicle.fechaEntrada).toISOString().split('T')[0],
+      fechaSalida: vehicle.fechaSalida ? new Date(vehicle.fechaSalida).toISOString().split('T')[0] : '',
     });
     setIsModalOpen(true);
   };
@@ -164,21 +172,35 @@ export default function VehiclesPage() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Propietario</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehículo</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Propietario
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Vehículo
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Estado
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {vehicles.map((vehicle) => (
               <tr key={vehicle.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{vehicle.propietario}</div>
-                  <div className="text-sm text-gray-500">{vehicle.telefono}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {vehicle.propietario}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {vehicle.telefono}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{vehicle.marca} {vehicle.modelo}</div>
+                  <div className="text-sm text-gray-900">
+                    {vehicle.marca} {vehicle.modelo}
+                  </div>
                   <div className="text-sm text-gray-500">{vehicle.ano}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -194,14 +216,19 @@ export default function VehiclesPage() {
                     <Edit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(vehicle.id)} className="text-red-600 hover:text-red-900 mr-2"><Trash2 size={18} />
+                    onClick={() => handleDelete(vehicle.id)}
+                    className="text-red-600 hover:text-red-900 mr-2"
+                  >
+                    <Trash2 size={18} />
                   </button>
                   <button>
-                  <Link href={`/dashboard/vehicles/${vehicle.id}`} className="text-blue-600 hover:text-blue-900">
-                    <Eye size={18} />
-                  </Link>
+                    <Link
+                      href={`/dashboard/vehicles/${vehicle.id}`}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      <Eye size={18} />
+                    </Link>
                   </button>
-
                 </td>
               </tr>
             ))}
@@ -210,170 +237,259 @@ export default function VehiclesPage() {
       </div>
 
       {isModalOpen && (
-  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-    <div className="relative top-20 mx-auto p-5 border w-3/4 max-w-2xl shadow-lg rounded-md bg-white">
-      <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-        {currentVehicle ? 'Editar Vehículo' : 'Añadir Nuevo Vehículo'}
-      </h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Propietario</label>
-            <input
-              type="text"
-              value={formData.propietario}
-              onChange={(e) => setFormData({ ...formData, propietario: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Teléfono</label>
-            <input
-              type="tel"
-              value={formData.telefono}
-              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Marca</label>
-            <input
-              type="text"
-              value={formData.marca}
-              onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Modelo</label>
-            <input
-              type="text"
-              value={formData.modelo}
-              onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Año</label>
-            <input
-              type="number"
-              value={formData.ano}
-              onChange={(e) => setFormData({ ...formData, ano: parseInt(e.target.value) })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Cilindrada</label>
-            <input
-              type="number"
-              value={formData.cilindrada}
-              onChange={(e) => setFormData({ ...formData, cilindrada: parseInt(e.target.value) })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Combustible</label>
-            <select
-              value={formData.combustible}
-              onChange={(e) => setFormData({ ...formData, combustible: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            >
-              <option value="">Seleccione combustible</option>
-              <option value="Gasolina">Gasolina</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Eléctrico">Eléctrico</option>
-              <option value="Híbrido">Híbrido</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Kilometraje</label>
-            <input
-              type="number"
-              value={formData.kilometraje}
-              onChange={(e) => setFormData({ ...formData, kilometraje: parseInt(e.target.value) })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Bastidor</label>
-            <input
-              type="text"
-              value={formData.bastidor}
-              onChange={(e) => setFormData({ ...formData, bastidor: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Estado</label>
-            <select
-              value={formData.estado}
-              onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            >
-              <option value="En reparación">En reparación</option>
-              <option value="Pendiente de piezas">Pendiente de piezas</option>
-              <option value="Finalizado">Finalizado</option>
-            </select>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+          <div className="relative top-20 mx-auto p-5 border w-3/4 max-w-2xl shadow-lg rounded-md bg-white">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
+              {currentVehicle ? "Editar Vehículo" : "Añadir Nuevo Vehículo"}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Propietario
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.propietario}
+                    onChange={(e) =>
+                      setFormData({ ...formData, propietario: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.telefono}
+                    onChange={(e) =>
+                      setFormData({ ...formData, telefono: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Marca
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.marca}
+                    onChange={(e) =>
+                      setFormData({ ...formData, marca: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Modelo
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.modelo}
+                    onChange={(e) =>
+                      setFormData({ ...formData, modelo: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Año
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.ano}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        ano: parseInt(e.target.value),
+                      })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Cilindrada
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.cilindrada}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        cilindrada: parseInt(e.target.value),
+                      })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Combustible
+                  </label>
+                  <select
+                    value={formData.combustible}
+                    onChange={(e) =>
+                      setFormData({ ...formData, combustible: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  >
+                    <option value="">Seleccione combustible</option>
+                    <option value="Gasolina">Gasolina</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Eléctrico">Eléctrico</option>
+                    <option value="Híbrido">Híbrido</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Kilometraje
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.kilometraje}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        kilometraje: parseInt(e.target.value),
+                      })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Bastidor
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.bastidor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bastidor: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Estado
+                  </label>
+                  <select
+                    value={formData.estado}
+                    onChange={(e) =>
+                      setFormData({ ...formData, estado: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  >
+                    <option value="En reparación">En reparación</option>
+                    <option value="Pendiente de piezas">
+                      Pendiente de piezas
+                    </option>
+                    <option value="Finalizado">Finalizado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Fecha de Entrada
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.fechaEntrada}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fechaEntrada: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Fecha de Salida
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.fechaSalida}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fechaSalida: e.target.value })
+                    }
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <MechanicSelector
+                  selectedMechanics={formData.empleados}
+                  onChange={(ids) =>
+                    setFormData({ ...formData, empleados: ids })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Comentarios
+                </label>
+                <textarea
+                  value={formData.comentarios}
+                  onChange={(e) =>
+                    setFormData({ ...formData, comentarios: e.target.value })
+                  }
+                  rows={3}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                ></textarea>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setCurrentVehicle(null);
+                    setFormData({
+                      propietario: '',
+                      telefono: '',
+                      marca: '',
+                      modelo: '',
+                      ano: new Date().getFullYear(),
+                      cilindrada: 0,
+                      combustible: '',
+                      kilometraje: 0,
+                      bastidor: '',
+                      empleados: [],
+                      comentarios: '',
+                      estado: 'En reparación',
+                      fechaEntrada: new Date().toISOString().split('T')[0],
+                      fechaSalida: '',
+                    });
+                  }}
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {currentVehicle ? "Actualizar" : "Crear"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        <div>
-          <MechanicSelector selectedMechanics={formData.empleados} onChange={(ids) => setFormData({ ...formData, empleados: ids })}/>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Comentarios</label>
-          <textarea
-            value={formData.comentarios}
-            onChange={(e) => setFormData({ ...formData, comentarios: e.target.value })}
-            rows={3}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          ></textarea>
-        </div>
-        <div className="flex justify-end space-x-3">
-          <button
-            type="button"
-            onClick={() => {
-              setIsModalOpen(false);
-              setCurrentVehicle(null);
-              setFormData({
-                propietario: '',
-                telefono: '',
-                marca: '',
-                modelo: '',
-                ano: new Date().getFullYear(),
-                cilindrada: 0,
-                combustible: '',
-                kilometraje: 0,
-                bastidor: '',
-                empleados: [],
-                comentarios: '',
-                estado: 'En reparación',
-              });
-            }}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {currentVehicle ? 'Actualizar' : 'Crear'}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }

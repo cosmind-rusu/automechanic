@@ -1,3 +1,4 @@
+/* dashboard/vehicles/[id]/page.tsx */
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -17,6 +18,8 @@ type Vehicle = {
   empleados: { id: string; nombre: string; apellido: string }[];
   comentarios?: string;
   estado: string;
+  fechaEntrada: Date;
+  fechaSalida?: Date;
 };
 
 export default function VehicleDetailPage() {
@@ -28,7 +31,6 @@ export default function VehicleDetailPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch all vehicles for navigation
     const fetchVehicles = async () => {
       try {
         const response = await fetch('/api/vehicles');
@@ -46,7 +48,6 @@ export default function VehicleDetailPage() {
   }, []);
 
   useEffect(() => {
-    // Fetch individual vehicle details
     const fetchVehicle = async () => {
       try {
         const response = await fetch(`/api/vehicles/${params.id}`);
@@ -189,6 +190,29 @@ export default function VehicleDetailPage() {
                 >
                   {vehicle.estado}
                 </span>
+              </dd>
+            </div>
+            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt className="text-sm font-medium text-gray-500">Fecha de Entrada</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                {new Date(vehicle.fechaEntrada).toLocaleDateString('es-ES', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </dd>
+            </div>
+            <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt className="text-sm font-medium text-gray-500">Fecha de Salida</dt>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                {vehicle.fechaSalida 
+                  ? new Date(vehicle.fechaSalida).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })
+                  : 'Pendiente'
+                }
               </dd>
             </div>
             <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

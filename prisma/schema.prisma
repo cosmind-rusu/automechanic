@@ -84,9 +84,12 @@ model Vehicle {
   empleados     User[]   @relation("VehicleEmployees")
   comentarios   String?
   estado        String   @default("En reparación")
+  fechaEntrada  DateTime @default(now()) 
+  fechaSalida   DateTime?                
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
 
 model Distributor {
   id        String   @id @default(cuid())

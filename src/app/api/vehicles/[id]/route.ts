@@ -36,11 +36,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       where: { id: params.id },
       data: {
         ...data,
+        fechaEntrada: new Date(data.fechaEntrada),
+        fechaSalida: data.fechaSalida ? new Date(data.fechaSalida) : null,
         empleados: {
-          set: [],
-          connect: data.empleados && data.empleados.length > 0
-            ? data.empleados.map((id: string) => ({ id }))
-            : undefined,
+          set: [], // Limpiamos la relación anterior
+          connect: data.empleados?.map((id: string) => ({ id })),
         },
       },
       include: {

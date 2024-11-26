@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Vehicle" ADD COLUMN     "fechaEntrada" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "fechaSalida" TIMESTAMP(3);
