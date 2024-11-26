@@ -61,7 +61,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employeeId, onClose
         body: JSON.stringify({
           nombre: employeeData.nombre.trim(),
           apellido: employeeData.apellido.trim(),
-          telefono: parseInt(employeeData.telefono.trim(), 10), // Convertir a número
+          telefono: parseInt(employeeData.telefono.trim(), 10),
           rol: employeeData.rol,
         }),
       });
