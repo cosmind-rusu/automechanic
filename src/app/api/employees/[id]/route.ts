@@ -69,3 +69,22 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     await prisma.$disconnect();
   }
 }
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const { id } = params;
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+    }
+
+    await prisma.user.delete({ where: { id } });
+
+    return NextResponse.json({ message: 'Empleado eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar el empleado:', error);
+    return NextResponse.json({ error: 'Error al eliminar el empleado' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
