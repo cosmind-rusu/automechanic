@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  # Base de datos PostgreSQL
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: automechanic
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d automechanic"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+
+  # Aplicación Next.js (imagen ya construida)
+  app:
+    image: cosmindrusu/automechanic-app:1.0
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/automechanic?schema=public"
+      NODE_ENV: production
+      PORT: 3000
+      NEXTAUTH_SECRET: "agmgGX+u1X0y7mSGh0/nGjxCx1/zeg/fWIkoasd4YHY="
+      NEXTAUTH_URL: "https://localhost:3000"
+      OPENAI_API_KEY: "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"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
