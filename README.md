@@ -40,5 +40,5 @@ para montar el nodemail
 
 https://support.google.com/accounts/answer/185833?hl=en
 
-<a href="https://hits.sh/github.com/cosmind-rusu/automechanic/"><img alt="Hits" src="https://hits.sh/github.com/silentsoft/hits.svg"/></a>
+<a href="https://hits.sh/github.com/cosmind-rusu/automechanic/"><img alt="Hits" src="https://hits.sh/github.com/cosmind-rusu/automechanic.svg"/></a>
 
