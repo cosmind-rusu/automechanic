@@ -39,3 +39,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 para montar el nodemail
 
 https://support.google.com/accounts/answer/185833?hl=en
+
+<p align="center"> <img src="https://komarev.com/ghpvc/?username=cosmind-rusu&label=Visitas%20&color=aa2487&style=for-the-badge" alt="Cosmin"</p>
